@@ -1,7 +1,0 @@
-{
-  "entity.guaiwugongcheng.druid.ambient": { "subtitle": "subtitles.guaiwugongcheng.entity.druid.ambient", "sounds": [ "mob/skeleton/say1", "mob/skeleton/say2", "mob/skeleton/say3" ] },
-  "entity.guaiwugongcheng.druid.death": { "subtitle": "subtitles.guaiwugongcheng.entity.druid.death", "sounds": [ "mob/skeleton/death" ] },
-  "entity.guaiwugongcheng.druid.hurt": { "subtitle": "subtitles.guaiwugongcheng.entity.druid.hurt", "sounds": [  "mob/skeleton/hurt1", "mob/skeleton/hurt2", "mob/skeleton/hurt3", "mob/skeleton/hurt4" ] },
-  "entity.guaiwugongcheng.druid.shoot": { "subtitle": "subtitles.guaiwugongcheng.entity.druid.shoot", "sounds": [ "mob/ghast/fireball4" ] },
-  "entity.guaiwugongcheng.druid.step": { "subtitle": "subtitles.block.generic.footsteps", "sounds": [ "mob/skeleton/step1", "mob/skeleton/step2", "mob/skeleton/step3", "mob/skeleton/step4" ] }
-}
