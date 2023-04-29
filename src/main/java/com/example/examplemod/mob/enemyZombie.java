@@ -55,6 +55,8 @@ public class enemyZombie extends Monster {
     private coreBlockEntity coreblockentity;
     private int ticksSinceReachedGoal=0;
     private boolean targetAlive=true;
+    private boolean followingByHurt=false;
+    private int lastHurtTimeStamp=0;
     public enemyZombie(EntityType<? extends enemyZombie> p_33002_, Level p_33003_) {
         super(p_33002_, p_33003_);
         lastPosition=this.getBlockPos();
@@ -86,7 +88,7 @@ public class enemyZombie extends Monster {
         this.goalSelector.addGoal(
                 7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
         this.targetSelector.addGoal(
-                1, (new HurtByTargetGoal(this)).setAlertOthers(ZombifiedPiglin.class));
+                1, new FollowMobByHurt(this));
         this.targetSelector.addGoal(
                 2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         this.targetSelector.addGoal(
@@ -138,8 +140,18 @@ public class enemyZombie extends Monster {
     private void mobAction(){
         double distance=caculateDistance(this.coreblockPos,this);
         if (distance>2){
-            System.out.println(caculateDistance(this.coreblockPos,this));
-            moveToCoreBlock(this.coreblockPos);
+            //System.out.println(caculateDistance(this.coreblockPos,this));
+            if (followingByHurt){
+                System.out.println("由于受到攻击，放弃移动到目标，正在追击");
+                lastHurtTimeStamp++;
+                if (lastHurtTimeStamp>100){
+                    followingByHurt=false;
+                    lastHurtTimeStamp=0;
+                    System.out.println("追击时间过长，放弃追击");
+                }
+            }else{
+                moveToCoreBlock(this.coreblockPos);
+            }
         }
         if (distance<2.5){
             //level.removeBlock(coreblockPos, false);
@@ -222,7 +234,11 @@ public class enemyZombie extends Monster {
             LivingEntity livingentity = this.getTarget();
             if (livingentity == null && damageSource.getEntity() instanceof LivingEntity) {
                 livingentity = (LivingEntity)damageSource.getEntity();
+
             }
+            System.out.println("受到了伤害");
+            this.followingByHurt=true;
+            lastHurtTimeStamp=0;
 
 
             return true;
@@ -270,6 +286,17 @@ public class enemyZombie extends Monster {
         protected void checkAndPerformAttack(LivingEntity enemy, double distance) {
             // 在此处自定义你的攻击逻辑
             super.checkAndPerformAttack(enemy, distance);
+        }
+    }
+    class FollowMobByHurt extends HurtByTargetGoal{
+
+        public FollowMobByHurt(PathfinderMob p_26039_, Class<?>... p_26040_) {
+            super(p_26039_, p_26040_);
+        }
+        public void start(){
+            super.start();
+            followingByHurt=true;
+            System.out.println("受到攻击，开始追击");
         }
     }
     class ZombieAttackCoreBlockGoal extends RemoveBlockGoal{
