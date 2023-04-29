@@ -2,6 +2,7 @@ package com.example.examplemod.init;
 
 import com.example.examplemod.mobModel.enemySkeletenModel;
 import com.example.examplemod.mobModel.enemyZombieModel;
+import com.example.examplemod.mobModel.swordSoiderModel;
 import com.example.examplemod.mobRender.BipedRenderer;
 import net.minecraft.client.model.ZombieModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -23,7 +24,7 @@ public class MyEntieyRender {
 //    public static final  enemySketelon=event.registerEntityRenderer(TFEntities.SKELETON_DRUID.get(), m -> new TFBipedRenderer<>(m, new SkeletonDruidModel(m.bakeLayer(TFModelLayers.SKELETON_DRUID)), 0.5F, "skeletondruid.png"));
     public static final ModelLayerLocation enemySketelen=register("enemysketelen");
     public static final ModelLayerLocation enemyZombie=register("enemyzombie");
-
+    public static final ModelLayerLocation swordSoider=register("swordsoider");
     MyEntieyRender(){
 //        registry.registerEntityRenderer(MyBlockEntites.coreblockentity.get(),
 //                m-> );
@@ -38,11 +39,15 @@ public class MyEntieyRender {
         event.registerEntityRenderer(MyEntites.zombie.get(),
                 m -> new BipedRenderer<>(m, new enemyZombieModel(m.bakeLayer(
                         enemyZombie)), 0.5F, "zombie.png"));
+        event.registerEntityRenderer(MyEntites.swordsoider.get(),
+                m -> new BipedRenderer<>(m, new swordSoiderModel(m.bakeLayer(
+                        swordSoider),false), 0.5F, "swordsoider.png"));
     }
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event){
         event.registerLayerDefinition(enemySketelen, enemySkeletenModel::create);
         event.registerLayerDefinition(enemyZombie,enemyZombieModel::createLayerDefinition);
+        event.registerLayerDefinition(swordSoider,swordSoiderModel::createLayerDefinition);
     }
     private static ModelLayerLocation register(String p_171294_) {
         return register(p_171294_, "main");

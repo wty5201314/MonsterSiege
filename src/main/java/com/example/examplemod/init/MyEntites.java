@@ -3,9 +3,11 @@ package com.example.examplemod.init;
 import com.example.examplemod.blockEntity.coreBlockEntity;
 import com.example.examplemod.mob.enemySkeleten;
 import com.example.examplemod.mob.enemyZombie;
+import com.example.examplemod.mob.swordSoider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -31,8 +33,9 @@ import static com.example.examplemod.init.MyBlocks.coreblock;
 public class MyEntites <T extends Entity>{
     public static final DeferredRegister<EntityType<?>> registry= DeferredRegister
             .create(ForgeRegistries.ENTITY_TYPES, MODID);
-    public static final DeferredRegister<Item> spawnEggs = DeferredRegister
-            .create(ForgeRegistries.ITEMS, MODID);
+//    public static final DeferredRegister<Item> spawnEggs = DeferredRegister
+//            .create(ForgeRegistries.ITEMS, MODID);
+    public static final DeferredRegister<Item> spawnEggs = MyItems.registry;
     public static final RegistryObject<EntityType<enemySkeleten>> sketelen= make(
             prefix("enemysketelen"),
             enemySkeleten::new, MobCategory.MONSTER, 0.6F, 1.99F,
@@ -40,13 +43,15 @@ public class MyEntites <T extends Entity>{
     public static final RegistryObject<EntityType<enemyZombie>> zombie=make(
             prefix("enemyzombie"),enemyZombie::new,MobCategory.MONSTER,
             0.6f,1.99f,0xa3a3a4, 0x2a3b18);
-
+    public static final RegistryObject<EntityType<swordSoider>> swordsoider=make(
+            prefix("swordsoider"),swordSoider::new,MobCategory.CREATURE,
+            0.6f,1.99f,0xa3a3a5,0x2a3b19);
     MyEntites(){
 
     }
     public static void register(IEventBus iEventBus) {
         registry.register(iEventBus);
-        spawnEggs.register(iEventBus);
+        //spawnEggs.register(iEventBus);
     }
     @SubscribeEvent
     public static void registerSpawnPlacements(SpawnPlacementRegisterEvent event) {
@@ -56,11 +61,15 @@ public class MyEntites <T extends Entity>{
         event.register(zombie.get(), SpawnPlacements.Type.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, enemyZombie::checkDruidSpawnRules,
                 SpawnPlacementRegisterEvent.Operation.REPLACE);
+        event.register(swordsoider.get(), SpawnPlacements.Type.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, swordSoider::checkDruidSpawnRules,
+                SpawnPlacementRegisterEvent.Operation.REPLACE);
     }
     @SubscribeEvent
     public static void addEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(sketelen.get(), AbstractSkeleton.createAttributes().build());
         event.put(zombie.get(),enemyZombie.createAttributes().build());
+        event.put(swordsoider.get(),swordSoider.createAttributes().build());
     }
 
     public static ResourceLocation prefix(String name) {
@@ -90,7 +99,9 @@ public class MyEntites <T extends Entity>{
         if (fireproof) builder.fireImmune();
         RegistryObject<EntityType<E>> ret = registry.register(id.getPath(), () -> builder.build(id.toString()));
         if (primary != 0 && secondary != 0) {
-            spawnEggs.register(id.getPath() + "_spawn_egg", () -> new ForgeSpawnEggItem(() -> (EntityType<? extends Mob>) ret.get(), primary, secondary, new Item.Properties()));
+            spawnEggs.register(id.getPath() + "_spawn_egg",
+                    () -> new ForgeSpawnEggItem(() -> (EntityType<? extends Mob>) ret.get(),
+                            primary, secondary, new Item.Properties().tab(CreativeModeTab.TAB_MISC)));
         }
         return ret;
     }
