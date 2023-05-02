@@ -3,6 +3,7 @@ package com.example.examplemod.mob;
 import com.example.examplemod.blockEntity.coreBlockEntity;
 import com.example.examplemod.init.MyBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -40,6 +41,43 @@ public class AbstractSiegeMonster extends Monster {
     protected AbstractSiegeMonster(EntityType<? extends AbstractSiegeMonster> p_33002_, Level p_33003_) {
         super(p_33002_, p_33003_);
         lastPosition=this.getBlockPos();
+    }
+    @Override
+    public void addAdditionalSaveData(CompoundTag compoundTag){
+        super.addAdditionalSaveData(compoundTag);
+        if (this.coreblockPos!=null){
+            compoundTag.putLong("coreblockpos",coreblockPos.asLong());
+        }
+        if (this.lastPosition!=null){
+            compoundTag.putLong("lastposition",lastPosition.asLong());
+        }
+        compoundTag.putInt("tickswithoutmovement",this.ticksWithoutMovement);
+        compoundTag.putBoolean("targetalive",this.targetAlive);
+        compoundTag.putBoolean("followingbyhurt",this.followingByHurt);
+        compoundTag.putInt("lasthurttimestamp",this.lastHurtTimeStamp);
+    }
+    @Override
+    public void readAdditionalSaveData(CompoundTag compoundTag){
+        super.readAdditionalSaveData(compoundTag);
+        if (compoundTag.contains("coreblockpos")) {
+            this.coreblockPos = BlockPos.of(compoundTag.getLong("coreblockpos"));
+            this.coreblockentity= (coreBlockEntity) level.getBlockEntity(this.coreblockPos);
+        }
+        if (compoundTag.contains("lastposition")){
+            this.lastPosition= BlockPos.of(compoundTag.getLong("lastposition"));
+        }
+        if (compoundTag.contains("tickswithoutmovement")){
+            this.ticksWithoutMovement=compoundTag.getInt("tickswithoutmovement");
+        }
+        if (compoundTag.contains("targetalive")){
+            this.targetAlive=compoundTag.getBoolean("targetalive");
+        }
+        if (compoundTag.contains("followingbyhurt")){
+            this.followingByHurt=compoundTag.getBoolean("followingbyhurt");
+        }
+        if (compoundTag.contains("lasthurttimestamp")){
+            this.lastHurtTimeStamp=compoundTag.getInt("lasthurttimestamp");
+        }
     }
     @Override
     protected void registerGoals(){
@@ -205,13 +243,14 @@ public class AbstractSiegeMonster extends Monster {
     }
     @Override
     public boolean hurt(DamageSource damageSource, float p_34289_) {
+        if (damageSource.isExplosion()){
+            return false;
+        }else
         if (!super.hurt(damageSource, p_34289_)) {
             return false;
         } else if (!(this.level instanceof ServerLevel)) {
             return false;
-        } else if (damageSource.isExplosion()){
-            return false;
-        }else {
+        } else  {
             ServerLevel serverlevel = (ServerLevel)this.level;
             LivingEntity livingentity = this.getTarget();
             if (livingentity == null && damageSource.getEntity() instanceof LivingEntity) {
