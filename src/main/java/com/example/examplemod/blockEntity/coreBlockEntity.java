@@ -11,30 +11,19 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.server.command.TextComponentHelper;
 import org.jetbrains.annotations.NotNull;
-import org.openjdk.nashorn.internal.ir.annotations.Ignore;
 
-import java.awt.*;
-import java.util.HashMap;
 import java.util.Random;
 
 import static com.example.examplemod.ExampleMod.LOGGER;
@@ -47,6 +36,11 @@ public class coreBlockEntity extends BlockEntity  {
     private  BlockPos blockPos;
     private BlockState blockState;
     private int hp=100;
+    private int createEnemyInterval=200;
+    private  int enemyInterval=0;
+    private  boolean eventStarted=true;
+    private int boShuNow =1;
+    private int boShuTotal=5;
     public coreBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
         super(coreblockentity.get(),p_155229_, p_155230_);
         blockPos=p_155229_;
@@ -67,11 +61,9 @@ public class coreBlockEntity extends BlockEntity  {
         super.load(tag);
         if (tag.contains("a")){
             this.blockPos= BlockPos.of(tag.getLong("a"));
-            System.out.println("加载a"+this.blockPos.toString());
         }
         if (tag.contains("b")){
             this.blockState= NbtUtils.readBlockState(tag.getCompound("b"));
-            System.out.println("加载b"+this.blockState.toString());
         }
     }
     @Override
@@ -93,13 +85,28 @@ public class coreBlockEntity extends BlockEntity  {
     public <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         Player nearestPlayer= level.getNearestPlayer(pos.getX(),pos.getY(),pos.getZ(),8.0D,false);
         if (nearestPlayer!=null){
-            if (!level.isClientSide){
+            if (!level.isClientSide&&!eventStarted){
                 if (recordTime()){
                     //System.out.println("Level:"+level.toString());
                     startEvent(level,blockEntity.getBlockPos());
                 }
             }
             //System.out.println(time);
+        }
+        if (!level.isClientSide&&eventStarted){
+            if (enemyInterval<createEnemyInterval){
+                enemyInterval++;
+            }else{
+                enemyInterval=0;
+                sendHelloToNearbyPlayers(level,"message.guaiwugongcheng.startevent",
+                        "第"+ boShuNow +"波，共"+boShuTotal+"波");
+                boShuNow++;
+                spawnPigNearby(level,blockPos,5,1,63);
+                if (boShuNow >boShuTotal){
+                    eventStarted=false;
+                    boShuNow =1;
+                }
+            }
         }
     }
 
@@ -114,13 +121,16 @@ public class coreBlockEntity extends BlockEntity  {
     private void initTimes(){
         Random random=new Random();
         time=0;
-        startEventTime=5*20+random.nextInt(5*20); // 5秒到10秒
+        startEventTime=5555*20+random.nextInt(5*20); // 5秒到10秒
     }
 
     private void startEvent(Level level, BlockPos blockPos){
         System.out.println("开始攻城");
-        sendHelloToNearbyPlayers(level);
-        spawnPigNearby(level,blockPos);
+        //sendHelloToNearbyPlayers(level);
+        eventStarted=true;
+//        for (int i=0;i<5;i++){
+//            spawnPigNearby(level,blockPos,5,1,63);
+//        }
         initTimes();
 
     }
@@ -156,13 +166,13 @@ public class coreBlockEntity extends BlockEntity  {
             level.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
         }
     }
-    private void spawnPigNearby(Level level, BlockPos blockPos) {
+    private void spawnPigNearby(Level level, BlockPos blockPos,int enemyNum,int difficult,double distanceOff) {
         // Get the world object
 
         // Calculate spawn position
-        int enemyNumMax=25;
-        int difficulty=1;
-        double distanceOffset=63;
+        int enemyNumMax=enemyNum;
+        int difficulty=difficult;
+        double distanceOffset=distanceOff;
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()+distanceOffset;
             double y=blockPos.getY()+1;
@@ -211,31 +221,6 @@ public class coreBlockEntity extends BlockEntity  {
             double z=blockPos.getZ()-distanceOffset;
             createEnemy(level, blockPos, x, y, z);
         }
-//        double x = blockPos.getX() + 10.5D;
-//        double y = blockPos.getY() + 1;
-//        double z = blockPos.getZ() + 10.5D;
-//        System.out.println(level);
-//        if (level!=null){
-//            System.out.println(level.isClientSide);
-//        }
-//        if (level==null||level.isClientSide){
-//            return;
-//        }
-//        // Create a pig entity
-//        System.out.println("创建生物");
-//        //Zombie pig = EntityType.ZOMBIE.create(level);
-//        enemyZombie enemyzombie = MyEntites.zombie.get().create(level);
-//        while(!blockState.isValidSpawn(level,new BlockPos(x,y,z), MyEntites.zombie.get())){
-//            y++;
-//        }
-//
-//        if (enemyzombie != null) {
-//            enemyzombie.setPos(x, y, z);
-//            enemyzombie.setBlockPos(blockPos);
-//            enemyzombie.setCoreblockentity(this);
-//            // Add the pig to the world
-//            level.addFreshEntity(enemyzombie);
-//        }
     }
 
     private void createEnemy(Level level, BlockPos blockPos, double x, double y, double z) {
@@ -254,7 +239,7 @@ public class coreBlockEntity extends BlockEntity  {
         }
     }
 
-    public void sendHelloToNearbyPlayers(Level level) {
+    public void sendHelloToNearbyPlayers(Level level,String translatable,String extraStr) {
         if (level instanceof ServerLevel) {
             ServerLevel serverLevel = (ServerLevel) level;
             // 获取方块实体的坐标
@@ -265,8 +250,8 @@ public class coreBlockEntity extends BlockEntity  {
                 double distance = blockPos.distSqr(player.blockPosition());
                 // 如果距离小于或等于 10000 (100 * 100)，则向玩家发送消息
                 if (distance <= 10000) {
-
-                    player.sendSystemMessage(Component.translatable("message.guaiwugongcheng.startevent"));
+                    Component component=Component.literal(extraStr).withStyle(ChatFormatting.WHITE);
+                    player.sendSystemMessage(Component.translatable(translatable,component));
                     //player.sendSystemMessage(new myComponent(1,new HashMap<>()).withStyle(ChatFormatting.DARK_AQUA));
                 }
             }
