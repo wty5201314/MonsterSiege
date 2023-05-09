@@ -6,6 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.entity.BellBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -32,14 +34,16 @@ import java.awt.image.TileObserver;
 import static com.example.examplemod.ExampleMod.*;
 import static com.example.examplemod.init.MyBlockEntites.coreblockentity;
 
-public class coreBlock extends Block implements EntityBlock {
+public class coreBlock extends FallingBlock implements EntityBlock {
+    private coreBlockEntity coreblockEntity;
     public coreBlock() {
-        super(BlockBehaviour.Properties.of(Material.STONE));
+        super(BlockBehaviour.Properties.of(Material.STONE).strength(6.0f,36000));
     }
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
-        return new coreBlockEntity(p_153215_,p_153216_);
+        coreblockEntity= new coreBlockEntity(p_153215_,p_153216_);
+        return coreblockEntity;
     }
 //    @Nullable
 //    public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
@@ -78,7 +82,9 @@ public class coreBlock extends Block implements EntityBlock {
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
-
+    public void onLand(Level p_48793_, BlockPos blockPos, BlockState p_48795_, BlockState p_48796_, FallingBlockEntity p_48797_) {
+        coreblockEntity.updateMobBlockPos(blockPos);
+    }
 
     @Nullable
     @Override

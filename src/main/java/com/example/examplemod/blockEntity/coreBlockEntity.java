@@ -2,6 +2,7 @@ package com.example.examplemod.blockEntity;
 
 
 import com.example.examplemod.init.MyEntites;
+import com.example.examplemod.mob.abstractSiegeMonster;
 import com.example.examplemod.mob.enemyZombie;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -21,6 +22,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -45,7 +48,7 @@ public class coreBlockEntity extends BlockEntity  {
     private  boolean eventStarted=true;
     private int boShuNow =1;
     private int boShuTotal=5;
-    private List<Mob> spawnedMobs=new ArrayList<>();
+    private List<abstractSiegeMonster> spawnedMobs=new ArrayList<>();
     private int checkMobTicks=0; //距离上次检查怪物存货状况过去的时间
     public coreBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
         super(coreblockentity.get(),p_155229_, p_155230_);
@@ -87,7 +90,12 @@ public class coreBlockEntity extends BlockEntity  {
         LOGGER.debug(blockPos.toString());
         System.out.println();
     }
-
+    public void updateMobBlockPos(BlockPos blockPos){
+        this.blockPos=blockPos;
+        for (int i=0;i<spawnedMobs.size();i++){
+            spawnedMobs.get(i).setBlockPos(blockPos);
+        }
+    }
     public <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         Player nearestPlayer= level.getNearestPlayer(pos.getX(),pos.getY(),pos.getZ(),8.0D,false);
         if (nearestPlayer!=null){ //当附近没玩家时不计时
@@ -108,7 +116,7 @@ public class coreBlockEntity extends BlockEntity  {
                     sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.startevent",
                             "第"+ boShuNow +"波，共"+boShuTotal+"波");
                     boShuNow++;
-                    spawnPigNearby(level,blockPos,5,1,63);
+                    spawnPigNearby(level,blockPos,2,1,63);
                 }
             }
             if ( boShuNow > boShuTotal){// 当怪物刷完后，如果怪物都被杀死，就判定守城成功
@@ -116,7 +124,7 @@ public class coreBlockEntity extends BlockEntity  {
                     checkMobTicks=0;
                     boolean allDead=true;
                     int aliveCount=0;
-                    for (Mob mob:spawnedMobs){
+                    for (abstractSiegeMonster mob:spawnedMobs){
                         if (!mob.isDeadOrDying()){
                             allDead=false;
                             aliveCount++;
@@ -153,6 +161,7 @@ public class coreBlockEntity extends BlockEntity  {
         for (int i=0;i<10;i++){
             spawnAtLocation(new ItemStack(Items.DIAMOND),0,level,blockPos);
         }
+        initEvents();
     }
     private boolean recordTime(){ // 计时与判断时间是否达到阈值
         time++;
@@ -234,43 +243,43 @@ public class coreBlockEntity extends BlockEntity  {
         double distanceOffset=distanceOff;
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()+distanceOffset;
-            double y=blockPos.getY()+1;
+            double y=blockPos.getY();
             double z=blockPos.getZ()+i;
             createEnemy(level, blockPos, x, y, z);
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()+distanceOffset;
-            double y=blockPos.getY()+1;
+            double y=blockPos.getY();
             double z=blockPos.getZ()-i;
             createEnemy(level, blockPos, x, y, z);
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()-distanceOffset;
-            double y=blockPos.getY()+1;
+            double y=blockPos.getY();
             double z=blockPos.getZ()+i;
             createEnemy(level, blockPos, x, y, z);
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()-distanceOffset;
-            double y=blockPos.getY()+1;
+            double y=blockPos.getY();
             double z=blockPos.getZ()-i;
             createEnemy(level, blockPos, x, y, z);
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()+i;
-            double y=blockPos.getY()+1;
+            double y=blockPos.getY();
             double z=blockPos.getZ()+distanceOffset;
             createEnemy(level, blockPos, x, y, z);
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()-i;
-            double y=blockPos.getY()+1;
+            double y=blockPos.getY();
             double z=blockPos.getZ()+distanceOffset;
             createEnemy(level, blockPos, x, y, z);
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()+i;
-            double y=blockPos.getY()+1;
+            double y=blockPos.getY();
             double z=blockPos.getZ()-distanceOffset;
             createEnemy(level, blockPos, x, y, z);
         }
@@ -287,11 +296,27 @@ public class coreBlockEntity extends BlockEntity  {
             return;
         }
         enemyZombie enemyzombie = MyEntites.zombie.get().create(level);
-        while(!blockState.isValidSpawn(level,new BlockPos(x, y, z), MyEntites.zombie.get())){
-            y++;
+        double y2=y;
+        BlockPos blockPos1=new BlockPos(x,y2,z);
+        BlockState blockState1=level.getBlockState(blockPos1);
+        Block block=blockState1.getBlock();
+        BlockPos blockPos2=new BlockPos(x,y2+1,z);
+        BlockState blockState2=level.getBlockState(blockPos2);
+        Block block1=blockState2.getBlock();
+        while(!(block instanceof AirBlock) || !(block1 instanceof AirBlock)){
+            y2++;
+            blockPos1=new BlockPos(x,y2,z);
+            blockState1=level.getBlockState(blockPos1);
+            block=blockState1.getBlock();
+            blockPos2=new BlockPos(x,y2+1,z);
+            blockState2=level.getBlockState(blockPos2);
+            block1=blockState2.getBlock();
         }
+//        while(!blockState.isValidSpawn(level,new BlockPos(x, y2, z), MyEntites.zombie.get())){
+//            y2+=1;
+//        }
         if (enemyzombie != null) {
-            enemyzombie.setPos(x, y, z);
+            enemyzombie.setPos(x, y2, z);
             enemyzombie.setBlockPos(blockPos);
             enemyzombie.setCoreblockentity(this);
             spawnedMobs.add(enemyzombie);
