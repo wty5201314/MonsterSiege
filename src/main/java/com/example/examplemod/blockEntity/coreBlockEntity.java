@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -89,7 +90,7 @@ public class coreBlockEntity extends BlockEntity  {
 
     public <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         Player nearestPlayer= level.getNearestPlayer(pos.getX(),pos.getY(),pos.getZ(),8.0D,false);
-        if (nearestPlayer!=null){
+        if (nearestPlayer!=null){ //当附近没玩家时不计时
             if (!level.isClientSide&&!eventStarted){
                 if (recordTime()){
                     //System.out.println("Level:"+level.toString());
@@ -109,28 +110,51 @@ public class coreBlockEntity extends BlockEntity  {
                     boShuNow++;
                     spawnPigNearby(level,blockPos,5,1,63);
                 }
-                if (boShuNow >boShuTotal){
-                    //eventStarted=false;
-                    //boShuNow =1;
-                }
             }
-            if (boShuNow > boShuTotal){
-                boolean allDead=true;
-                for (Mob mob:spawnedMobs){
-                    if (!mob.isDeadOrDying()){
-                        allDead=false;
-                        break;
+            if ( boShuNow > boShuTotal){// 当怪物刷完后，如果怪物都被杀死，就判定守城成功
+                if (checkMobTicks%100==0){ // 每5秒检查一次
+                    checkMobTicks=0;
+                    boolean allDead=true;
+                    int aliveCount=0;
+                    for (Mob mob:spawnedMobs){
+                        if (!mob.isDeadOrDying()){
+                            allDead=false;
+                            aliveCount++;
+                        }
                     }
-                }
-                if (allDead){
-                    sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.successevent","");
-
+                    if (allDead){
+                        successEvent();
+                    }else{
+                        sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.tipsevent",
+                                aliveCount+"个");
+                    }
+                }else{
+                    checkMobTicks++;
                 }
             }
         }
     }
-
-    private boolean recordTime(){
+    public ItemEntity spawnAtLocation(ItemStack p_19985_, float p_19986_,Level level ,BlockPos blockPos) {
+        if (p_19985_.isEmpty()) {
+            return null;
+        } else if (level.isClientSide) {
+            return null;
+        } else {
+            ItemEntity itementity = new ItemEntity(level, blockPos.getX(), blockPos.getY() + (double)p_19986_,
+                    blockPos.getZ(), p_19985_);
+            itementity.setDefaultPickUpDelay();
+            level.addFreshEntity(itementity);
+            return itementity;
+        }
+    }
+    private void successEvent(){
+        sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.successevent",
+                "");
+        for (int i=0;i<10;i++){
+            spawnAtLocation(new ItemStack(Items.DIAMOND),0,level,blockPos);
+        }
+    }
+    private boolean recordTime(){ // 计时与判断时间是否达到阈值
         time++;
         if (startEventTime<0){ // 初始化阈值时间
             initEvents();
@@ -141,6 +165,7 @@ public class coreBlockEntity extends BlockEntity  {
     private void initEvents(){
         Random random=new Random();
         time=0;
+        enemyInterval=0;
         startEventTime=5555*20+random.nextInt(5*20); // 5秒到10秒
         eventStarted=false;
     }
@@ -182,13 +207,24 @@ public class coreBlockEntity extends BlockEntity  {
                         (double)blockPos.getZ() + 0.5D,
                         1, d3, d1, d2, (double)0.15F);
             }
+            sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.failevent","");
             level.playSound((Player)null, blockPos, SoundEvents.TURTLE_EGG_BREAK, SoundSource.BLOCKS,
                     0.7F, 0.9F + 0.2F);
             level.removeBlockEntity(blockPos);
             level.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
-            sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.failevent","");
         }
     }
+    /**
+     * @description: TODO
+     * @param level
+     * @param blockPos
+     * @param enemyNum 生成的敌军数量
+     * @param difficult 难度系数
+     * @param distanceOff 距离核心方块的距离
+     * @return void
+     * @author: wty
+     * @date: 2023-05-09 16:47
+     **/
     private void spawnPigNearby(Level level, BlockPos blockPos,int enemyNum,int difficult,double distanceOff) {
         // Get the world object
 

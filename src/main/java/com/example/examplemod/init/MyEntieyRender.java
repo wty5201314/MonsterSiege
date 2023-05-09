@@ -35,7 +35,7 @@ public class MyEntieyRender {
         System.out.println("开始成功！");
         event.registerEntityRenderer(MyEntites.sketelen.get(),
                 m -> new BipedRenderer<>(m, new enemySkeletenModel(m.bakeLayer(
-                        enemySketelen)), 0.5F, "skeletondruid.png"));
+                        enemySketelen)), 0.5F, "skeleton.png"));
         event.registerEntityRenderer(MyEntites.zombie.get(),
                 m -> new BipedRenderer<>(m, new enemyZombieModel(m.bakeLayer(
                         enemyZombie)), 0.5F, "zombie.png"));

@@ -28,7 +28,7 @@ import net.minecraft.world.level.LightLayer;
 
 import java.util.UUID;
 
-public class enemySkeleten extends AbstractSkeleton {
+public class enemySkeleten extends abstractSiegeMonster {
     private RangedAttackGoal rangedAttackGoal;
 
     public enemySkeleten(EntityType<? extends enemySkeleten> type, Level world) {
@@ -39,16 +39,16 @@ public class enemySkeleten extends AbstractSkeleton {
     protected void registerGoals() {
         super.registerGoals();
 
-        this.rangedAttackGoal = new RangedAttackGoal(this, 1.25D, 60, 5.0F);
+       // this.rangedAttackGoal = new RangedAttackGoal(this, 1.25D, 60, 5.0F);
 
-        this.goalSelector.addGoal(4, this.rangedAttackGoal);
+        //this.goalSelector.addGoal(4, this.rangedAttackGoal);
     }
 
-    @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(DATA_BABY_ID, false);
-    }
+//    @Override
+//    protected void defineSynchedData() {
+//        super.defineSynchedData();
+//        this.getEntityData().define(DATA_BABY_ID, false);
+//    }
 
     @Override
     protected SoundEvent getAmbientSound() {
@@ -65,27 +65,27 @@ public class enemySkeleten extends AbstractSkeleton {
         return MySounds.SKELETON_DRUID_DEATH.get();
     }
 
-    @Override
-    protected SoundEvent getStepSound() {
-        return null;
-        //return TFSounds.SKELETON_DRUID_STEP.get();
-    }
+//    @Override
+//    protected SoundEvent getStepSound() {
+//        return null;
+//        //return TFSounds.SKELETON_DRUID_STEP.get();
+//    }
 
 
-    @Override
-    public void reassessWeaponGoal() {
-        if (!this.getLevel().isClientSide()) {
-            this.goalSelector.removeGoal(this.rangedAttackGoal);
-
-            if (this.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof HoeItem) {
-                this.goalSelector.addGoal(4, this.rangedAttackGoal);
-            } else {
-                super.reassessWeaponGoal();
-            }
-        } else {
-            super.reassessWeaponGoal();
-        }
-    }
+//    @Override
+//    public void reassessWeaponGoal() {
+//        if (!this.getLevel().isClientSide()) {
+//            this.goalSelector.removeGoal(this.rangedAttackGoal);
+//
+//            if (this.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof HoeItem) {
+//                this.goalSelector.addGoal(4, this.rangedAttackGoal);
+//            } else {
+//                super.reassessWeaponGoal();
+//            }
+//        } else {
+//            super.reassessWeaponGoal();
+//        }
+//    }
 
     @Override
     protected void populateDefaultEquipmentSlots(RandomSource random, DifficultyInstance difficulty) {
@@ -113,41 +113,41 @@ public class enemySkeleten extends AbstractSkeleton {
 //        }
 //    }
 
-    public static boolean checkDruidSpawnRules(EntityType<? extends enemySkeleten> entity, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random) {
-        return world.getDifficulty() != Difficulty.PEACEFUL && isValidLightLevel(world, pos, random) && checkMobSpawnRules(entity, world, reason, pos, random);
-    }
+//    public static boolean checkDruidSpawnRules(EntityType<? extends enemySkeleten> entity, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random) {
+//        return world.getDifficulty() != Difficulty.PEACEFUL && isValidLightLevel(world, pos, random) && checkMobSpawnRules(entity, world, reason, pos, random);
+//    }
 
     // [VanillaCopy] of super. Edits noted.
-    public static boolean isValidLightLevel(LevelAccessor accessor, BlockPos pos, RandomSource random) {
-        if (accessor.getBrightness(LightLayer.SKY, pos) > random.nextInt(32)) {
-            return false;
-        } else {
-            return accessor.getMaxLocalRawBrightness(pos) <= random.nextInt(12); // TF - rand(8) -> rand(12)
-        }
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putBoolean("IsBaby", this.isBaby());
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setBaby(compound.getBoolean("IsBaby"));
-    }
-
-    // Below: VANILLACOPY Zombie Baby Code
-
-    private static final UUID SPEED_MODIFIER_BABY_UUID = UUID.fromString("3F508BEA-92F5-47B3-BCA2-B0FA84860574");
-    private static final AttributeModifier SPEED_MODIFIER_BABY = new AttributeModifier(SPEED_MODIFIER_BABY_UUID, "Baby speed boost", 0.5D, AttributeModifier.Operation.MULTIPLY_BASE);
-    private static final EntityDataAccessor<Boolean> DATA_BABY_ID = SynchedEntityData.defineId(enemySkeleten.class, EntityDataSerializers.BOOLEAN);
-
-    @Override
-    public boolean isBaby() {
-        return this.getEntityData().get(DATA_BABY_ID);
-    }
+//    public static boolean isValidLightLevel(LevelAccessor accessor, BlockPos pos, RandomSource random) {
+//        if (accessor.getBrightness(LightLayer.SKY, pos) > random.nextInt(32)) {
+//            return false;
+//        } else {
+//            return accessor.getMaxLocalRawBrightness(pos) <= random.nextInt(12); // TF - rand(8) -> rand(12)
+//        }
+//    }
+//
+//    @Override
+//    public void addAdditionalSaveData(CompoundTag compound) {
+//        super.addAdditionalSaveData(compound);
+//        compound.putBoolean("IsBaby", this.isBaby());
+//    }
+//
+//    @Override
+//    public void readAdditionalSaveData(CompoundTag compound) {
+//        super.readAdditionalSaveData(compound);
+//        this.setBaby(compound.getBoolean("IsBaby"));
+//    }
+//
+//    // Below: VANILLACOPY Zombie Baby Code
+//
+//    private static final UUID SPEED_MODIFIER_BABY_UUID = UUID.fromString("3F508BEA-92F5-47B3-BCA2-B0FA84860574");
+//    private static final AttributeModifier SPEED_MODIFIER_BABY = new AttributeModifier(SPEED_MODIFIER_BABY_UUID, "Baby speed boost", 0.5D, AttributeModifier.Operation.MULTIPLY_BASE);
+//    private static final EntityDataAccessor<Boolean> DATA_BABY_ID = SynchedEntityData.defineId(enemySkeleten.class, EntityDataSerializers.BOOLEAN);
+//
+//    @Override
+//    public boolean isBaby() {
+//        return this.getEntityData().get(DATA_BABY_ID);
+//    }
 
     @Override
     public int getExperienceReward() {
@@ -158,34 +158,34 @@ public class enemySkeleten extends AbstractSkeleton {
         return super.getExperienceReward();
     }
 
-    @Override
-    public void setBaby(boolean shouldBaby) {
-        this.getEntityData().set(DATA_BABY_ID, shouldBaby);
-        if (!this.getLevel().isClientSide()) {
-            AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
-            attributeinstance.removeModifier(SPEED_MODIFIER_BABY);
-            if (shouldBaby) {
-                attributeinstance.addTransientModifier(SPEED_MODIFIER_BABY);
-            }
-        }
-    }
-
-    @Override
-    public void onSyncedDataUpdated(EntityDataAccessor<?> dataAccessor) {
-        if (DATA_BABY_ID.equals(dataAccessor)) {
-            this.refreshDimensions();
-        }
-
-        super.onSyncedDataUpdated(dataAccessor);
-    }
-
-    @Override
-    public double getMyRidingOffset() {
-        return this.isBaby() ? -0.35D : -0.6D;
-    }
-
-    @Override
-    protected float getStandingEyeHeight(Pose pose, EntityDimensions size) {
-        return this.isBaby() ? 0.93F : super.getStandingEyeHeight(pose, size);
-    }
+//    @Override
+//    public void setBaby(boolean shouldBaby) {
+//        this.getEntityData().set(DATA_BABY_ID, shouldBaby);
+//        if (!this.getLevel().isClientSide()) {
+//            AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
+//            attributeinstance.removeModifier(SPEED_MODIFIER_BABY);
+//            if (shouldBaby) {
+//                attributeinstance.addTransientModifier(SPEED_MODIFIER_BABY);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void onSyncedDataUpdated(EntityDataAccessor<?> dataAccessor) {
+//        if (DATA_BABY_ID.equals(dataAccessor)) {
+//            this.refreshDimensions();
+//        }
+//
+//        super.onSyncedDataUpdated(dataAccessor);
+//    }
+//
+//    @Override
+//    public double getMyRidingOffset() {
+//        return this.isBaby() ? -0.35D : -0.6D;
+//    }
+//
+//    @Override
+//    protected float getStandingEyeHeight(Pose pose, EntityDimensions size) {
+//        return this.isBaby() ? 0.93F : super.getStandingEyeHeight(pose, size);
+//    }
 }

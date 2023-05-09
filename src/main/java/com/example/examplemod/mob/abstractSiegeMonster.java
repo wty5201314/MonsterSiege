@@ -27,9 +27,9 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
-public class AbstractSiegeMonster extends Monster {
+public class abstractSiegeMonster extends Monster {
     private static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(
-            AbstractSiegeMonster.class, EntityDataSerializers.BYTE);
+            abstractSiegeMonster.class, EntityDataSerializers.BYTE);
     private BlockPos coreblockPos;
     private BlockPos lastPosition;
     private int ticksWithoutMovement;
@@ -38,7 +38,7 @@ public class AbstractSiegeMonster extends Monster {
     private boolean targetAlive=true;
     private boolean followingByHurt=false;
     private int lastHurtTimeStamp=0;
-    protected AbstractSiegeMonster(EntityType<? extends AbstractSiegeMonster> p_33002_, Level p_33003_) {
+    protected abstractSiegeMonster(EntityType<? extends abstractSiegeMonster> p_33002_, Level p_33003_) {
         super(p_33002_, p_33003_);
         lastPosition=this.getBlockPos();
     }
@@ -98,13 +98,13 @@ public class AbstractSiegeMonster extends Monster {
     }
     protected void addBehaviourGoals(){
         this.goalSelector.addGoal(
-                2, new AbstractSiegeMonster.EnemyZombieAttackGoal(this, 1.0D, false));
+                2, new abstractSiegeMonster.EnemyZombieAttackGoal(this, 1.0D, false));
 //        this.goalSelector.addGoal(
 //                6, new MoveThroughVillageGoal(this, 1.0D, true, 4, this::canBreakDoors));
         this.goalSelector.addGoal(
                 7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
         this.targetSelector.addGoal(
-                1, new AbstractSiegeMonster.FollowMobByHurt(this));
+                1, new abstractSiegeMonster.FollowMobByHurt(this));
         this.targetSelector.addGoal(
                 2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         this.targetSelector.addGoal(
@@ -285,7 +285,7 @@ public class AbstractSiegeMonster extends Monster {
 
         return flag;
     }
-    public static boolean checkDruidSpawnRules(EntityType<? extends enemyZombie> entity, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random) {
+    public static boolean checkDruidSpawnRules(EntityType<? extends abstractSiegeMonster> entity, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random) {
         return false;
     }
     class FollowMobByHurt extends HurtByTargetGoal {
