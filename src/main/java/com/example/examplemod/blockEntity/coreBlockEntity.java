@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -24,6 +25,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static com.example.examplemod.ExampleMod.LOGGER;
@@ -41,6 +44,8 @@ public class coreBlockEntity extends BlockEntity  {
     private  boolean eventStarted=true;
     private int boShuNow =1;
     private int boShuTotal=5;
+    private List<Mob> spawnedMobs=new ArrayList<>();
+    private int checkMobTicks=0; //距离上次检查怪物存货状况过去的时间
     public coreBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
         super(coreblockentity.get(),p_155229_, p_155230_);
         blockPos=p_155229_;
@@ -97,14 +102,29 @@ public class coreBlockEntity extends BlockEntity  {
             if (enemyInterval<createEnemyInterval){
                 enemyInterval++;
             }else{
-                enemyInterval=0;
-                sendHelloToNearbyPlayers(level,"message.guaiwugongcheng.startevent",
-                        "第"+ boShuNow +"波，共"+boShuTotal+"波");
-                boShuNow++;
-                spawnPigNearby(level,blockPos,5,1,63);
+                if (boShuNow<=boShuTotal){
+                    enemyInterval=0;
+                    sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.startevent",
+                            "第"+ boShuNow +"波，共"+boShuTotal+"波");
+                    boShuNow++;
+                    spawnPigNearby(level,blockPos,5,1,63);
+                }
                 if (boShuNow >boShuTotal){
-                    eventStarted=false;
-                    boShuNow =1;
+                    //eventStarted=false;
+                    //boShuNow =1;
+                }
+            }
+            if (boShuNow > boShuTotal){
+                boolean allDead=true;
+                for (Mob mob:spawnedMobs){
+                    if (!mob.isDeadOrDying()){
+                        allDead=false;
+                        break;
+                    }
+                }
+                if (allDead){
+                    sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.successevent","");
+
                 }
             }
         }
@@ -113,25 +133,27 @@ public class coreBlockEntity extends BlockEntity  {
     private boolean recordTime(){
         time++;
         if (startEventTime<0){ // 初始化阈值时间
-            initTimes();
+            initEvents();
         }
         return time > startEventTime;//达到阈值时间
     }
 
-    private void initTimes(){
+    private void initEvents(){
         Random random=new Random();
         time=0;
         startEventTime=5555*20+random.nextInt(5*20); // 5秒到10秒
+        eventStarted=false;
     }
 
     private void startEvent(Level level, BlockPos blockPos){
         System.out.println("开始攻城");
         //sendHelloToNearbyPlayers(level);
+        boShuNow=1;
         eventStarted=true;
 //        for (int i=0;i<5;i++){
 //            spawnPigNearby(level,blockPos,5,1,63);
 //        }
-        initTimes();
+        //initTimes();
 
     }
     public void decreaseHp(Level level){
@@ -164,6 +186,7 @@ public class coreBlockEntity extends BlockEntity  {
                     0.7F, 0.9F + 0.2F);
             level.removeBlockEntity(blockPos);
             level.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
+            sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.failevent","");
         }
     }
     private void spawnPigNearby(Level level, BlockPos blockPos,int enemyNum,int difficult,double distanceOff) {
@@ -235,11 +258,12 @@ public class coreBlockEntity extends BlockEntity  {
             enemyzombie.setPos(x, y, z);
             enemyzombie.setBlockPos(blockPos);
             enemyzombie.setCoreblockentity(this);
+            spawnedMobs.add(enemyzombie);
             level.addFreshEntity(enemyzombie);
         }
     }
 
-    public void sendHelloToNearbyPlayers(Level level,String translatable,String extraStr) {
+    public void sendMsgToNearbyPlayers(Level level, String translatable, String extraStr) {
         if (level instanceof ServerLevel) {
             ServerLevel serverLevel = (ServerLevel) level;
             // 获取方块实体的坐标

@@ -1,4 +1,6 @@
 {
   "item.guaiwugongcheng.testitem": "测试物品",
-  "message.guaiwugongcheng.startevent": "攻城开始：%s"
+  "message.guaiwugongcheng.startevent": "攻城开始：%s",
+  "message.guaiwugongcheng.failevent": "守城失败！，请再接再厉。%s",
+  "message.guaiwugongcheng.successevent": "恭喜你，守城成功！请到核心方块处领取奖励。%s"
 }

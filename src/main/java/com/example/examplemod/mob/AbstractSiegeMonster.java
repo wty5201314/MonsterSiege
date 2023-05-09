@@ -124,7 +124,14 @@ public class AbstractSiegeMonster extends Monster {
     public boolean causeFallDamage(float p_148711_, float p_148712_, DamageSource p_148713_) {
         return false;
     }
-
+    @Override
+    public boolean removeWhenFarAway(double d){
+        return false;
+    }
+    @Override
+    public boolean isOnFire(){
+        return false;
+    }
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_FLAGS_ID, (byte)0);
@@ -173,6 +180,7 @@ public class AbstractSiegeMonster extends Monster {
     }
     private void mobAction(){
         double distance=caculateDistance(this.coreblockPos,this);
+        BlockEntity blockEntity = level.getBlockEntity(coreblockPos);
         if (distance>2){
             //System.out.println(caculateDistance(this.coreblockPos,this));
             if (followingByHurt){
@@ -190,13 +198,14 @@ public class AbstractSiegeMonster extends Monster {
         if (distance<2.5){
             //level.removeBlock(coreblockPos, false);
             if (!level.isClientSide){
-                BlockEntity blockEntity = level.getBlockEntity(coreblockPos);
                 if (blockEntity instanceof coreBlockEntity) {
                     coreblockentity.decreaseHp(level);
-                }else{
-                    targetAlive=false;
                 }
-
+            }
+        }
+        if (!level.isClientSide){
+            if (! (blockEntity instanceof  coreBlockEntity)){
+                targetAlive=false;
             }
         }
     }
