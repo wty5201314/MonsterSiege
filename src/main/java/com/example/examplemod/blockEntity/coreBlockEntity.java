@@ -35,6 +35,7 @@ import java.util.Random;
 
 import static com.example.examplemod.ExampleMod.LOGGER;
 import static com.example.examplemod.init.MyBlockEntites.coreblockentity;
+import static com.example.examplemod.util.msg.sendMsgToNearbyPlayers;
 
 public class coreBlockEntity extends BlockEntity  {
     private int time=0;
@@ -114,14 +115,14 @@ public class coreBlockEntity extends BlockEntity  {
                 if (boShuNow<=boShuTotal){
                     enemyInterval=0;
                     sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.startevent",
-                            "第"+ boShuNow +"波，共"+boShuTotal+"波");
+                            "第"+ boShuNow +"波，共"+boShuTotal+"波",getBlockPos());
                     boShuNow++;
                     spawnPigNearby(level,blockPos,2,1,63);
                 }
             }
             if ( boShuNow > boShuTotal){// 当怪物刷完后，如果怪物都被杀死，就判定守城成功
                 if (checkMobTicks%100==0){ // 每5秒检查一次
-                    checkMobTicks=0;
+                    checkMobTicks=1;
                     boolean allDead=true;
                     int aliveCount=0;
                     for (abstractSiegeMonster mob:spawnedMobs){
@@ -134,7 +135,7 @@ public class coreBlockEntity extends BlockEntity  {
                         successEvent();
                     }else{
                         sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.tipsevent",
-                                aliveCount+"个");
+                                aliveCount+"个",getBlockPos());
                     }
                 }else{
                     checkMobTicks++;
@@ -157,7 +158,7 @@ public class coreBlockEntity extends BlockEntity  {
     }
     private void successEvent(){
         sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.successevent",
-                "");
+                "",getBlockPos());
         for (int i=0;i<10;i++){
             spawnAtLocation(new ItemStack(Items.DIAMOND),0,level,blockPos);
         }
@@ -216,7 +217,7 @@ public class coreBlockEntity extends BlockEntity  {
                         (double)blockPos.getZ() + 0.5D,
                         1, d3, d1, d2, (double)0.15F);
             }
-            sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.failevent","");
+            sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.failevent","",getBlockPos());
             level.playSound((Player)null, blockPos, SoundEvents.TURTLE_EGG_BREAK, SoundSource.BLOCKS,
                     0.7F, 0.9F + 0.2F);
             level.removeBlockEntity(blockPos);
@@ -245,57 +246,57 @@ public class coreBlockEntity extends BlockEntity  {
             double x=blockPos.getX()+distanceOffset;
             double y=blockPos.getY();
             double z=blockPos.getZ()+i;
-            createEnemy(level, blockPos, x, y, z);
+            createEnemy(level, blockPos, x, y, z,MyEntites.zombie.get().create(level));
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()+distanceOffset;
             double y=blockPos.getY();
             double z=blockPos.getZ()-i;
-            createEnemy(level, blockPos, x, y, z);
+            createEnemy(level, blockPos, x, y, z,MyEntites.zombie.get().create(level));
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()-distanceOffset;
             double y=blockPos.getY();
             double z=blockPos.getZ()+i;
-            createEnemy(level, blockPos, x, y, z);
+            createEnemy(level, blockPos, x, y, z,MyEntites.zombie.get().create(level));
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()-distanceOffset;
             double y=blockPos.getY();
             double z=blockPos.getZ()-i;
-            createEnemy(level, blockPos, x, y, z);
+            createEnemy(level, blockPos, x, y, z,MyEntites.zombie.get().create(level));
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()+i;
             double y=blockPos.getY();
             double z=blockPos.getZ()+distanceOffset;
-            createEnemy(level, blockPos, x, y, z);
+            createEnemy(level, blockPos, x, y, z,MyEntites.zombie.get().create(level));
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()-i;
             double y=blockPos.getY();
             double z=blockPos.getZ()+distanceOffset;
-            createEnemy(level, blockPos, x, y, z);
+            createEnemy(level, blockPos, x, y, z,MyEntites.zombie.get().create(level));
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()+i;
             double y=blockPos.getY();
             double z=blockPos.getZ()-distanceOffset;
-            createEnemy(level, blockPos, x, y, z);
+            createEnemy(level, blockPos, x, y, z,MyEntites.zombie.get().create(level));
         }
         for (int i=0;i<enemyNumMax;i++){
             double x=blockPos.getX()-i;
             double y=blockPos.getY()+1;
             double z=blockPos.getZ()-distanceOffset;
-            createEnemy(level, blockPos, x, y, z);
+            createEnemy(level, blockPos, x, y, z,MyEntites.zombie.get().create(level));
         }
     }
 
-    private void createEnemy(Level level, BlockPos blockPos, double x, double y, double z) {
+    private void createEnemy(Level level, BlockPos blockPos, double x, double y, double z,abstractSiegeMonster monster) {
         if (level ==null|| level.isClientSide){
             return;
         }
-        enemyZombie enemyzombie = MyEntites.zombie.get().create(level);
+        //enemyZombie enemyzombie = MyEntites.zombie.get().create(level);
         double y2=y;
         BlockPos blockPos1=new BlockPos(x,y2,z);
         BlockState blockState1=level.getBlockState(blockPos1);
@@ -315,31 +316,31 @@ public class coreBlockEntity extends BlockEntity  {
 //        while(!blockState.isValidSpawn(level,new BlockPos(x, y2, z), MyEntites.zombie.get())){
 //            y2+=1;
 //        }
-        if (enemyzombie != null) {
-            enemyzombie.setPos(x, y2, z);
-            enemyzombie.setBlockPos(blockPos);
-            enemyzombie.setCoreblockentity(this);
-            spawnedMobs.add(enemyzombie);
-            level.addFreshEntity(enemyzombie);
+        if (monster != null) {
+            monster.setPos(x, y2, z);
+            monster.setBlockPos(blockPos);
+            monster.setCoreblockentity(this);
+            spawnedMobs.add(monster);
+            level.addFreshEntity(monster);
         }
     }
 
-    public void sendMsgToNearbyPlayers(Level level, String translatable, String extraStr) {
-        if (level instanceof ServerLevel) {
-            ServerLevel serverLevel = (ServerLevel) level;
-            // 获取方块实体的坐标
-            BlockPos blockPos = getBlockPos();
-            // 遍历所有在线玩家
-            for (ServerPlayer player : serverLevel.players()) {
-                // 计算玩家与方块实体的距离
-                double distance = blockPos.distSqr(player.blockPosition());
-                // 如果距离小于或等于 10000 (100 * 100)，则向玩家发送消息
-                if (distance <= 10000) {
-                    Component component=Component.literal(extraStr).withStyle(ChatFormatting.WHITE);
-                    player.sendSystemMessage(Component.translatable(translatable,component));
-                    //player.sendSystemMessage(new myComponent(1,new HashMap<>()).withStyle(ChatFormatting.DARK_AQUA));
-                }
-            }
-        }
-    }
+//    public void sendMsgToNearbyPlayers(Level level, String translatable, String extraStr) {
+//        if (level instanceof ServerLevel) {
+//            ServerLevel serverLevel = (ServerLevel) level;
+//            // 获取方块实体的坐标
+//            BlockPos blockPos = getBlockPos();
+//            // 遍历所有在线玩家
+//            for (ServerPlayer player : serverLevel.players()) {
+//                // 计算玩家与方块实体的距离
+//                double distance = blockPos.distSqr(player.blockPosition());
+//                // 如果距离小于或等于 10000 (100 * 100)，则向玩家发送消息
+//                if (distance <= 10000) {
+//                    Component component=Component.literal(extraStr).withStyle(ChatFormatting.WHITE);
+//                    player.sendSystemMessage(Component.translatable(translatable,component));
+//                    //player.sendSystemMessage(new myComponent(1,new HashMap<>()).withStyle(ChatFormatting.DARK_AQUA));
+//                }
+//            }
+//        }
+//    }
 }

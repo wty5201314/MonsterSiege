@@ -4,6 +4,7 @@ import com.example.examplemod.goal.myFollowOwnerGoal;
 import com.example.examplemod.goal.myOwnerHurtByTargetGoal;
 import com.example.examplemod.goal.myOwnerHurtTargetGoal;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -82,6 +83,7 @@ public class abstractSoider extends PathfinderMob {
         if (!this.level.isClientSide && hand == InteractionHand.MAIN_HAND) {
             this.setOwner(player);
             this.switchMode();
+            player.sendSystemMessage(Component.translatable("message.guaiwugongcheng.soiderswitchmode",currentMode));
             return InteractionResult.SUCCESS;
         }
 
