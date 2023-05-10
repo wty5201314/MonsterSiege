@@ -41,7 +41,7 @@ public class MyEntieyRender {
                         enemyZombie)), 0.5F, "zombie.png"));
         event.registerEntityRenderer(MyEntites.swordsoider.get(),
                 m -> new BipedRenderer<>(m, new swordSoiderModel(m.bakeLayer(
-                        swordSoider),false), 0.5F, "swordsoider.png"));
+                        swordSoider),false), 0.5F, "steve.png"));
     }
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event){

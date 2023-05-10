@@ -31,16 +31,17 @@ public class myFollowOwnerGoal extends Goal {
     private float oldWaterCost;
     private final boolean canFly;
 
-    public myFollowOwnerGoal(abstractSoider p_25294_, double p_25295_, float p_25296_, float p_25297_, boolean p_25298_) {
-        this.abstractSoider = p_25294_;
-        this.level = p_25294_.level;
-        this.speedModifier = p_25295_;
-        this.navigation = p_25294_.getNavigation();
-        this.startDistance = p_25296_;
-        this.stopDistance = p_25297_;
-        this.canFly = p_25298_;
+    public myFollowOwnerGoal(abstractSoider soider, double speedModifier,
+                             float startDistance, float stopdistance, boolean fly) {
+        this.abstractSoider = soider;
+        this.level = soider.level;
+        this.speedModifier = speedModifier;
+        this.navigation = soider.getNavigation();
+        this.startDistance = startDistance;
+        this.stopDistance = stopdistance;
+        this.canFly = fly;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
-        if (!(p_25294_.getNavigation() instanceof GroundPathNavigation) && !(p_25294_.getNavigation() instanceof FlyingPathNavigation)) {
+        if (!(soider.getNavigation() instanceof GroundPathNavigation) && !(soider.getNavigation() instanceof FlyingPathNavigation)) {
             throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
         }
     }
