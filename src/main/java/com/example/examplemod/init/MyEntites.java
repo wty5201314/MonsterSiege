@@ -29,7 +29,7 @@ import static com.example.examplemod.ExampleMod.MODID;
 public class MyEntites <T extends Entity>{
     public static final DeferredRegister<EntityType<?>> registry= DeferredRegister
             .create(ForgeRegistries.ENTITY_TYPES, MODID);
-//    public static final DeferredRegister<Item> spawnEggs = DeferredRegister
+    //    public static final DeferredRegister<Item> spawnEggs = DeferredRegister
 //            .create(ForgeRegistries.ITEMS, MODID);
     public static final DeferredRegister<Item> spawnEggs = MyItems.registry;
     public static final RegistryObject<EntityType<enemySkeleten>> sketelen= make(

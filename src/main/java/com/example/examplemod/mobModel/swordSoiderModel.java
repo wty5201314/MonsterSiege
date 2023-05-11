@@ -13,7 +13,7 @@ public class swordSoiderModel extends PlayerModel<saberSolider> {
     public swordSoiderModel(ModelPart p_170821_, boolean p_170822_) {
         super(p_170821_, p_170822_);
     }
-//    public static MeshDefinition createMesh(CubeDeformation p_170682_, float p_170683_) {
+    //    public static MeshDefinition createMesh(CubeDeformation p_170682_, float p_170683_) {
 //        MeshDefinition meshdefinition = new MeshDefinition();
 //        PartDefinition partdefinition = meshdefinition.getRoot();
 //        partdefinition.addOrReplaceChild("cloak", CubeListBuilder.create().texOffs(0, 0).addBox(-5.0F, 0.0F, -1.0F, 10.0F, 16.0F, 1.0F, p_170682_, 1.0F, 0.5F), PartPose.offset(0.0F, 0.0F, 0.0F));

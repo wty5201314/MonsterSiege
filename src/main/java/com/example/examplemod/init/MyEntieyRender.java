@@ -20,7 +20,7 @@ import static com.example.examplemod.ExampleMod.MODID;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = MODID)
 public class MyEntieyRender {
-//    public static final EntityRenderersEvent.RegisterRenderers registry = new EntityRenderersEvent.RegisterRenderers();
+    //    public static final EntityRenderersEvent.RegisterRenderers registry = new EntityRenderersEvent.RegisterRenderers();
 //
 //    public static final  enemySketelon=event.registerEntityRenderer(TFEntities.SKELETON_DRUID.get(), m -> new TFBipedRenderer<>(m, new SkeletonDruidModel(m.bakeLayer(TFModelLayers.SKELETON_DRUID)), 0.5F, "skeletondruid.png"));
     public static final ModelLayerLocation enemySketelen=register("enemysketelen");
