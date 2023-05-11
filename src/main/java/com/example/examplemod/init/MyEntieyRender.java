@@ -1,5 +1,6 @@
 package com.example.examplemod.init;
 
+import com.example.examplemod.mobModel.archerSoliderModel;
 import com.example.examplemod.mobModel.enemySkeletenModel;
 import com.example.examplemod.mobModel.enemyZombieModel;
 import com.example.examplemod.mobModel.swordSoiderModel;
@@ -25,6 +26,8 @@ public class MyEntieyRender {
     public static final ModelLayerLocation enemySketelen=register("enemysketelen");
     public static final ModelLayerLocation enemyZombie=register("enemyzombie");
     public static final ModelLayerLocation swordSoider=register("swordsoider");
+    public static final ModelLayerLocation archerSoider=register("archersoider");
+
     MyEntieyRender(){
 //        registry.registerEntityRenderer(MyBlockEntites.coreblockentity.get(),
 //                m-> );
@@ -42,12 +45,17 @@ public class MyEntieyRender {
         event.registerEntityRenderer(MyEntites.swordsoider.get(),
                 m -> new BipedRenderer<>(m, new swordSoiderModel(m.bakeLayer(
                         swordSoider),false), 0.5F, "steve.png"));
+        event.registerEntityRenderer(MyEntites.archersoider.get(),
+                m -> new BipedRenderer<>(m, new archerSoliderModel(m.bakeLayer(
+                        archerSoider),false), 0.5F, "steve.png"));
     }
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event){
         event.registerLayerDefinition(enemySketelen, enemySkeletenModel::create);
         event.registerLayerDefinition(enemyZombie,enemyZombieModel::createLayerDefinition);
         event.registerLayerDefinition(swordSoider,swordSoiderModel::createLayerDefinition);
+        event.registerLayerDefinition(archerSoider,archerSoliderModel::createLayerDefinition);
+
     }
     private static ModelLayerLocation register(String p_171294_) {
         return register(p_171294_, "main");

@@ -16,8 +16,6 @@ import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -49,7 +47,7 @@ public class abstractSoider extends PathfinderMob {
 
         // 添加攻击僵尸的目标
         this.goalSelector.addGoal(1, new NearestAttackableTargetGoal<>(
-                this, enemyZombie.class, true));
+                this, abstractSiegeMonster.class, true));
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0D, true));
         this.targetSelector.addGoal(1, new myOwnerHurtByTargetGoal(this));
@@ -59,11 +57,11 @@ public class abstractSoider extends PathfinderMob {
             this.goalSelector.addGoal(1, new RandomStrollGoal(
                     this, 1.0D));
         } else if (currentMode == Mode.FOLLOW_PLAYER) {
-            this.goalSelector.addGoal(2, new myFollowOwnerGoal(
-                    this, 1.0D, 5.0F, 2.0F, false));
+            this.goalSelector.addGoal(1, new myFollowOwnerGoal(
+                    this, 1.0D, 10.0F, 2.0F, false));
         }
     }
-    public static boolean checkDruidSpawnRules(EntityType<? extends swordSoider> entity, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random) {
+    public static boolean checkDruidSpawnRules(EntityType<? extends abstractSoider> entity, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random) {
         return false;
     }
     public void switchMode() {

@@ -1,16 +1,14 @@
 package com.example.examplemod.init;
 
-import com.example.examplemod.blockEntity.coreBlockEntity;
+import com.example.examplemod.mob.archerSolider;
 import com.example.examplemod.mob.enemySkeleten;
 import com.example.examplemod.mob.enemyZombie;
-import com.example.examplemod.mob.swordSoider;
+import com.example.examplemod.mob.saberSolider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -22,11 +20,9 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import javax.annotation.Nullable;
 import java.util.Locale;
 
 import static com.example.examplemod.ExampleMod.MODID;
-import static com.example.examplemod.init.MyBlocks.coreblock;
 
 
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -43,8 +39,11 @@ public class MyEntites <T extends Entity>{
     public static final RegistryObject<EntityType<enemyZombie>> zombie=make(
             prefix("enemyzombie"),enemyZombie::new,MobCategory.MONSTER,
             0.6f,1.99f,0xa3a3a4, 0x2a3b18);
-    public static final RegistryObject<EntityType<swordSoider>> swordsoider=make(
-            prefix("swordsoider"),swordSoider::new,MobCategory.CREATURE,
+    public static final RegistryObject<EntityType<saberSolider>> swordsoider=make(
+            prefix("swordsoider"), saberSolider::new,MobCategory.CREATURE,
+            0.6f,1.99f,0xa3a3a5,0x2a3b19);
+    public static final RegistryObject<EntityType<archerSolider>> archersoider=make(
+            prefix("archersoider"), archerSolider::new,MobCategory.CREATURE,
             0.6f,1.99f,0xa3a3a5,0x2a3b19);
     MyEntites(){
 
@@ -62,14 +61,18 @@ public class MyEntites <T extends Entity>{
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, enemyZombie::checkDruidSpawnRules,
                 SpawnPlacementRegisterEvent.Operation.REPLACE);
         event.register(swordsoider.get(), SpawnPlacements.Type.ON_GROUND,
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, swordSoider::checkDruidSpawnRules,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, saberSolider::checkDruidSpawnRules,
+                SpawnPlacementRegisterEvent.Operation.REPLACE);
+        event.register(archersoider.get(), SpawnPlacements.Type.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, archerSolider::checkDruidSpawnRules,
                 SpawnPlacementRegisterEvent.Operation.REPLACE);
     }
     @SubscribeEvent
     public static void addEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(sketelen.get(), AbstractSkeleton.createAttributes().build());
         event.put(zombie.get(),enemyZombie.createAttributes().build());
-        event.put(swordsoider.get(),swordSoider.createAttributes().build());
+        event.put(swordsoider.get(), saberSolider.createAttributes().build());
+        event.put(archersoider.get(), archerSolider.createAttributes().build());
     }
 
     public static ResourceLocation prefix(String name) {

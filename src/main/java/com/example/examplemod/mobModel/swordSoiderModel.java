@@ -1,16 +1,14 @@
 package com.example.examplemod.mobModel;
 
-import com.example.examplemod.mob.swordSoider;
-import net.minecraft.client.model.HumanoidModel;
+import com.example.examplemod.mob.saberSolider;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class swordSoiderModel extends PlayerModel<swordSoider> {
+public class swordSoiderModel extends PlayerModel<saberSolider> {
 
     public swordSoiderModel(ModelPart p_170821_, boolean p_170822_) {
         super(p_170821_, p_170822_);
