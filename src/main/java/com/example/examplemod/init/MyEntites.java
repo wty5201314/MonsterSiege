@@ -28,7 +28,7 @@ import static com.example.examplemod.ExampleMod.MODID;
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class MyEntites <T extends Entity>{
     public static final DeferredRegister<EntityType<?>> registry= DeferredRegister
-            .create(ForgeRegistries.ENTITY_TYPES, MODID);
+            .create(ForgeRegistries.ENTITY_TYPES, MODID);1
     //    public static final DeferredRegister<Item> spawnEggs = DeferredRegister
 //            .create(ForgeRegistries.ITEMS, MODID);
     public static final DeferredRegister<Item> spawnEggs = MyItems.registry;
