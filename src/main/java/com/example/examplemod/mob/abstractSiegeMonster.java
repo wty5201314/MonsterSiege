@@ -109,6 +109,9 @@ public class abstractSiegeMonster extends Monster {
                 2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         this.targetSelector.addGoal(
                 3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
+        this.targetSelector.addGoal(
+                2, new NearestAttackableTargetGoal<>(this, abstractSoider.class, true));
+
     }
     class EnemyZombieAttackGoal extends MeleeAttackGoal {
         public EnemyZombieAttackGoal(PathfinderMob p_i1635_1_, double p_i1635_2_, boolean p_i1635_4_) {
@@ -296,7 +299,7 @@ public class abstractSiegeMonster extends Monster {
         public void start(){
             super.start();
             followingByHurt=true;
-            //System.out.println("受到攻击，开始追击");
+            System.out.println("受到攻击，开始追击");
         }
     }
     class ZombieAttackCoreBlockGoal extends RemoveBlockGoal{

@@ -35,7 +35,6 @@ public class MyEntieyRender {
     }
     @SubscribeEvent
     public static void init(EntityRenderersEvent.RegisterRenderers event){
-        System.out.println("开始成功！");
         event.registerEntityRenderer(MyEntites.sketelen.get(),
                 m -> new BipedRenderer<>(m, new enemySkeletenModel(m.bakeLayer(
                         enemySketelen)), 0.5F, "skeleton.png"));
@@ -44,10 +43,10 @@ public class MyEntieyRender {
                         enemyZombie)), 0.5F, "zombie.png"));
         event.registerEntityRenderer(MyEntites.swordsoider.get(),
                 m -> new BipedRenderer<>(m, new swordSoiderModel(m.bakeLayer(
-                        swordSoider),false), 0.5F, "steve.png"));
+                        swordSoider),false), 0.5F, "sabersoider.png"));
         event.registerEntityRenderer(MyEntites.archersoider.get(),
                 m -> new BipedRenderer<>(m, new archerSoliderModel(m.bakeLayer(
-                        archerSoider),false), 0.5F, "steve.png"));
+                        archerSoider),false), 0.5F, "archersoider.png"));
     }
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event){

@@ -51,6 +51,7 @@ public class coreBlockEntity extends BlockEntity  {
     private int boShuTotal=5;
     private List<abstractSiegeMonster> spawnedMobs=new ArrayList<>();
     private int checkMobTicks=0; //距离上次检查怪物存货状况过去的时间
+    private String tipEventMsg="message.guaiwugongcheng.tipsevent";
     public coreBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
         super(coreblockentity.get(),p_155229_, p_155230_);
         blockPos=p_155229_;
@@ -134,8 +135,10 @@ public class coreBlockEntity extends BlockEntity  {
                     if (allDead){
                         successEvent();
                     }else{
-                        sendMsgToNearbyPlayers(level,"message.guaiwugongcheng.tipsevent",
-                                aliveCount+"个",getBlockPos());
+                        sendMsgToNearbyPlayers(level,tipEventMsg,
+                                "剩余怪物："+aliveCount+"个",getBlockPos());
+                        sendMsgToNearbyPlayers(level,tipEventMsg,
+                                "基地血量："+this.hp,getBlockPos());
                     }
                 }else{
                     checkMobTicks++;
